@@ -1,0 +1,12 @@
+# ======================================================================
+# usage for interactive sessions: 
+# $ docker-compose run --service-ports datascience bash
+# ======================================================================
+version: "3"
+services: 
+  datascience: 
+    image: karenyng/hackoregon2019datascience:0.1.0
+    volumes:
+      - ../:/root/project/
+    ports:
+      - 12345-12350:12345-12350

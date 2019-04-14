@@ -32,6 +32,63 @@ e.g.
 		* [R usage example with KnitR reports](https://rstudio-pubs-static.s3.amazonaws.com/456313_9f8f6ba90b7a4a70a5f8cef7753d2d19.html)
 * `Google Cloud Colaboratory`
 
+# Recommended folder structure 
+```
+    ├── LICENSE
+    ├── build							    <- all the files needed to build the code dependencies
+    │   ├── Makefile 			    <- Makefile with commands like `make data` or `make train`
+    │   ├── requirements.txt  <- The requirements file for reproducing the analysis 
+    │   │         							 environment, generated with `pip freeze > requirements.txt`
+    │   ├── docker-compose.yml<- The docker-compose file starting resources 
+    │   └── Dockerfile 			  <- The dockerfile that uses requirements.txt file.
+    │
+    ├── README.md             <- The top-level README for developers using this project.
+    │
+    ├── data									<- You are encouraged to include links to metadata
+    │   ├── 1_raw             <-  Original raw data dump.
+    │   ├── 2_interim         <- Intermediate data that has been transformed, 
+    │   │         							 recommended format for relational datais parquet.
+    │   └── 3_processed       <- The final, canonical data sets for modeling.
+    │
+    ├── docs                  <- A default Sphinx project; see sphinx-doc.org for details
+    │
+    ├── models                <- Trained and serialized models, model predictions, or model summaries
+    │
+    ├── notebooks             <- Jupyter notebooks. Naming convention is a number (for ordering),
+    │                            the creator's initials, and a short `-` delimited description, e.g.
+    │                            `1.0-jqp-initial-data-exploration`.
+    │
+    ├── references            <- Manuals, and all other explanatory materials.
+    │
+    ├── reports               <- Generated analysis as HTML, PDF, LaTeX, etc.
+    │   └── figures           <- Generated graphics and figures to be used in reporting
+    │
+    │
+    ├── setup.py              <- makes project pip installable (pip install -e .) so src can be imported
+    ├── src                   <- Source code for use in this project.
+    │   ├── __init__.py       <- Makes src a Python module
+    │   │
+    │   ├── data              <- Scripts to download or generate data
+    │   │   └── make_dataset.py
+    │   │
+    │   ├── features       <- Scripts to turn raw data into features for modeling
+    │   │   └── build_features.py
+    │   │
+    │   ├── models         <- Scripts to train models and then use trained models to make
+    │   │   │                 predictions
+    │   │   ├── predict_model.py
+    │   │   └── train_model.py
+    │   │
+    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+    │       └── visualize.py
+    │
+    └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org
+```
+
+--------
+
+<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
 # Data storage in our public S3 bucket
 raw-data = `hacko-data-archive`
 clean-data = ?  # in the future
