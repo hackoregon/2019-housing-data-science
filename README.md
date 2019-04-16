@@ -35,19 +35,19 @@ e.g.
 # Recommended folder structure 
 ```
     ├── LICENSE
-    ├── build							    <- all the files needed to build the code dependencies
-    │   ├── Makefile 			    <- Makefile with commands like `make data` or `make train`
+    ├── build		      <- all the files needed to build the code dependencies
+    │   ├── Makefile 	      <- Makefile with commands like `make data` or `make train`
     │   ├── requirements.txt  <- The requirements file for reproducing the analysis 
-    │   │         							 environment, generated with `pip freeze > requirements.txt`
+    │   │         		 environment, generated with `pip freeze > requirements.txt`
     │   ├── docker-compose.yml<- The docker-compose file starting resources 
-    │   └── Dockerfile 			  <- The dockerfile that uses requirements.txt file.
+    │   └── Dockerfile 	      <- The dockerfile that uses requirements.txt file.
     │
     ├── README.md             <- The top-level README for developers using this project.
     │
-    ├── data									<- You are encouraged to include links to metadata
+    ├── data		      <- You are encouraged to include links to metadata
     │   ├── 1_raw             <-  Original raw data dump.
     │   ├── 2_interim         <- Intermediate data that has been transformed, 
-    │   │         							 recommended format for relational datais parquet.
+    │   │         		 recommended format for relational datais parquet.
     │   └── 3_processed       <- The final, canonical data sets for modeling.
     │
     ├── docs                  <- A default Sphinx project; see sphinx-doc.org for details
