@@ -1,11 +1,14 @@
 # ======================================================================
 # This is a template dockerfile for working on HackOregon data science 
 # projects locally on your laptop in 2019
-# usage: docker run -ti -p 12345:8888 :latest 
-# within the container, use jupyter notebook with:
-# $ jupyter notebook --ip 0.0.0.0 --no-browser --allow-root -v ${PWD}:/code/DataScience
-# then navigate to your web browser and go to the url:
-# 127.0.0.1:12345
+# usage at a terminal:
+# $ docker run -ti -p 12345:12345 karenngcivicsoftware/hackordatasciencetemplate:latest -v ${PWD}:/root/code/
+# within the container, you can launch jupyter notebook with:
+# either
+# $ ipynb
+# or equivalently you can run
+# $ jupyter notebook --ip 0.0.0.0 --no-browser --allow-root 
+# then navigate to your web browser and go to the url printed out from the terminal
 # to see the notebook
 # ======================================================================
 FROM continuumio/miniconda3:latest
