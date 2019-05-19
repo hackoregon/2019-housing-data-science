@@ -9,9 +9,9 @@ assignees: ''
 
 # Story Card Request
 
-**Project:**
-**Card Title:**
-**Card Document:** (link here)
+**Project:**      
+**Card Title:**     
+**Card Document:** (link here)     
 
 ## Milestones
 
