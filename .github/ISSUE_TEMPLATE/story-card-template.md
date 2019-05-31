@@ -18,6 +18,8 @@ assignees: ''
 - [ ] Create Card Document from [this template](https://docs.google.com/document/d/1aNBU5m5vc7coXbHzItJB9sUMAGufMVYEJZqXUkY40Gc/edit#) and link above     
 
 ### Type of data processing / analysis this story card uses 
+Each card can belong to one or more categories listed below
+
 - [x] descriptive - simple data (re)-representation, doing summary statistics belongs to this category, we do this for all data sets      
 - [ ] explanatory - testing hypotheses and / or comparing data points     
 - [ ] predictive - any regression, model fitting, classification or clustering tasks      
