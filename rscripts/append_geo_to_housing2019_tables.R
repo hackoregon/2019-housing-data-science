@@ -1,4 +1,5 @@
 ###  SETUP CONNECTION TO HOUSING 2019 STAGING DB ### 
+require(tidyverse)
 source("~/Documents/R/postgis_connect.R")
 con_pg <- make_postgis_con(mydb = 'housing-2019-staging', myuser = 'housing2019', host = 'housing-2019-staging.caicgny9d8nv.us-west-2.rds.amazonaws.com')
 
@@ -76,6 +77,23 @@ add_geo_to_table(
   con = con_pg
 )
 
+### Example of different shapes with same geoid would be: 
+
+# add_geo_to_table(
+#  table_name = 'public.race_by_tenure_1990t2017',
+#  geotable_name = 'public.orwa_census_tracts_geo',
+#  table_geoid_fieldname = 'tract_fips',
+#  geotable_geoid_fieldname = 'GEOID',
+#  table_geom_fieldname = 'tract_geom',
+#  geotable_geom_fieldname = 'geometry',
+#  con = con_pg,
+#  where = 'race_by_tenure_1990t2017."DATAYEAR" = 2010'
+# )
+
+# then rerun the same function with:
+# different geotable name for 2000 tracts 
+# where = 'race_by_tenure_1990t2017."DATAYEAR" = 2010'
+# and force = 1 - to get it update existing geo field;
 
 
 

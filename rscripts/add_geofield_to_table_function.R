@@ -15,15 +15,19 @@
 # geotable_geom_fieldname is the name of the geometry fieldname in the second table
 # con is the database connection needed
 # force_update = 0. If your geometry column already exists in table 1, you'll need to set force = 1 to overwrite. 
-
-add_geo_to_table <- function(table_name, geotable_name, table_geoid_fieldname, geotable_geoid_fieldname, table_geom_fieldname, geotable_geom_fieldname, con = con_pg, force_update = 0) {
+# where parameter can be used to specifies which rows in table 1 or table to to append geometry field to. For example if 
+# you have different geo-fields for different years but shared geoid's across years, you can specify 'table.year = 1990' 
+# in your where clause and only those rows will be updated. You can then run the function again with 'table.year = 2000' etc.
+# Use the table name (no alias) when you refer to any fields the 'where' (i.e. 'total_lons.year = 1990', not just 'year = 1990')
+require(tidyverse)
+add_geo_to_table <- function(table_name, geotable_name, table_geoid_fieldname, geotable_geoid_fieldname, table_geom_fieldname, geotable_geom_fieldname, con = con_pg, force_update = 0, where = 'TRUE') {
   if ( (tolower(table_name) != table_name & !grepl('"',table_name)) ||
        (tolower(geotable_name) != geotable_name & !grepl('"',geotable_name)) ){ warning('your table_name or geotable_name have upper cases letters that might cause you problems. Either change them in db or quote them like this: table_name = schema_name."table_name".')}
   if ( ! (grepl('\\.',table_name) & grepl('\\.',geotable_name))){ stop("table_name and geotable_name must include schema (i.e. '[[schema]].[[table]]').")}
   
   # get the srid of the geometry that will be appended
-  srid <- fetch(DBI::dbSendQuery(con, paste0("SELECT ST_SRID(",geotable_geom_fieldname,") FROM ",geotable_name," LIMIT 1")), n=-1)[1,1]
-  geometry_type <- fetch(DBI::dbSendQuery(con, paste0("SELECT ST_GEOMETRYTYPE(",geotable_geom_fieldname,") FROM ",geotable_name," LIMIT 1")), n=-1)[1,1] %>% sub('^ST_','',.) %>% toupper()
+  srid <- DBI::fetch(DBI::dbSendQuery(con, paste0("SELECT ST_SRID(",geotable_geom_fieldname,") FROM ",geotable_name," LIMIT 1")), n=-1)[1,1]
+  geometry_type <- DBI::fetch(DBI::dbSendQuery(con, paste0("SELECT ST_GEOMETRYTYPE(",geotable_geom_fieldname,") FROM ",geotable_name," LIMIT 1")), n=-1)[1,1] %>% sub('^ST_','',.) %>% toupper()
   # check if geom table already exists 
   table_geom_fieldname_exists <- 
     fetch(DBI::dbSendQuery(con, paste0("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA ||'.'|| TABLE_NAME = '", gsub('"','',table_name), "' AND COLUMN_NAME = '",table_geom_fieldname,"'")), n=-1)[1,1]
@@ -35,7 +39,7 @@ add_geo_to_table <- function(table_name, geotable_name, table_geoid_fieldname, g
     } 
   } else {
     other_geom_fields <- 
-      fetch(DBI::dbSendQuery(con, paste0("select f_geometry_column from geometry_columns WHERE f_table_schema || '.' || f_table_name =  '", gsub('"','',table_name), "'")), n=-1)
+      DBI::fetch(DBI::dbSendQuery(con, paste0("select f_geometry_column from geometry_columns WHERE f_table_schema || '.' || f_table_name =  '", gsub('"','',table_name), "'")), n=-1)
     if(dim(other_geom_fields)[2] > 0 ) {
       warning(paste0('The following geometry column(s) already exist(s): ',paste(other_geom_fields[,1],collapse = ', '),'... Adding additional geometry column'))
     }
@@ -49,6 +53,7 @@ add_geo_to_table <- function(table_name, geotable_name, table_geoid_fieldname, g
                                   '= ', geotable_name, '."', geotable_geom_fieldname, '"',
                               " FROM ", geotable_name,
                               ' WHERE ', geotable_name, '."', geotable_geoid_fieldname,'"::varchar',
-                                  ' = ', table_name, '."',table_geoid_fieldname ,'"::varchar'));
+                                  ' = ', table_name, '."',table_geoid_fieldname ,'"::varchar',
+                              ' AND ', where));
   
 }
