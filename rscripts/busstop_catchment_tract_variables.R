@@ -3,9 +3,10 @@
 # a weighting dataframe: the cz_tract_df - which includes catchment zone and proportion in each tract
 # an attribute data_frame - in this case our census data. 
 # The function to compute census variables for catchment zones currently can calculate using a weighted 
-# mean approach; or by grabbing the census value for the tract with the largest volume - which is
-# potentially useful for some categorical fields. It should be relatively easy to extend the function to 
-# handle other field calculation methods. 
+# mean approach; or by grabbing the census value for the tract with the largest area in the catchment 
+# zone - which is potentially useful for some categorical fields (like gentrification stage). It 
+# should be relatively easy to extend the function to handle other field calculation methods. 
+
 require(tidyverse)
 
 ### LOAD DATA ### 
@@ -14,9 +15,12 @@ census_data_pop <- read.csv("NCDB_Sample_Population_10jun2019.csv")
 census_data<- census_data %>% dplyr::left_join(census_data_pop)
 cz_tract_df <- read.csv("busstop_catchment_zones_tracts_overlap.csv")
 
-fields_to_append <- c('PovRate_17')
+### DEFINE FIELDS TO APPEND ###
+# all 2017 fields that are tract level (not 'Met' fields which are Metro area versions, and not TotalPopulation)
+fields_to_append <- names(census_data[,which(grepl('_17$',names(census_data)) & !grepl('^(Met|TotalPopulation)',names(census_data)))]) 
 
 ### DEFINE FUNCTION TO CALCULATE CATCHMENT ZONE VALUES ### 
+
 calc_catchment_param_value <- function(weighting_df, attribute_df, attribute_name, 
                                        weighting_geoid_fieldname = 'GEOID',
                                        weighting_value_fieldname = 'area_proportion',
@@ -53,8 +57,25 @@ calc_catchment_param_value <- function(weighting_df, attribute_df, attribute_nam
 
 
 ### APPLY THE FUNCTION TO ALL FIELDS FROM CENSUS WE WANT APPENDED TO CATCHMENT ZONES ### 
-cz_tract_df_appended <- cz_tract_df
+cz_tract_df_appended <- cz_tract_df %>% distinct(stop_id, rte, dir) 
 for (ff in fields_to_append){
   cz_tract_df_appended <- left_join(cz_tract_df_appended, 
                                     calc_catchment_param_value(cz_tract_df, census_data, ff))
 }
+write.csv(cz_tract_df_appended, 'busstop_catchment_zone_censusfield_appended.csv')
+
+
+### APPEND DATA TO SHAPEFILE ### 
+busstop_catchment_zone_shp_appended <- readRDS('busstop_catchment_zone_shp.RDS')
+if(nrow(busstop_catchment_zone_shp_appended@data) != nrow(cz_tract_df_appended)){
+  warning("Your attribute field doesn't have the same number of rows are your shapefile. This needs to be fixed to proceed")
+} 
+busstop_catchment_zone_shp_appended@data <- busstop_catchment_zone_shp_appended@data %>% 
+  left_join(cz_tract_df_appended)
+
+# write as geojson file for easy sharing. 
+busstop_catchment_zone_shp_appended %>% 
+  geojsonio::geojson_json() %>% 
+  geojsonio::geojson_write(file = "busstop_catchment_zone_with_census_attribs.geojson")
+
+
