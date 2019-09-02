@@ -19,8 +19,12 @@ require(geoR)
 require(tidyverse)
 
 # make database connection
-source("~/Documents/R/postgis_connect.R")
-con_pg <- make_postgis_con(mydb = 'housing-2019-staging', myuser = 'housing2019', host = 'housing-2019-staging.caicgny9d8nv.us-west-2.rds.amazonaws.com')
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+source("postgis_connect.R")
+source("../server_password.R")
+
+con_pg <- make_postgis_con(mydb = 'housing-2019-staging', myuser = 'housing2019', pwd = pw,
+                           host = 'housing-2019-staging.caicgny9d8nv.us-west-2.rds.amazonaws.com')
 
 # pull data (spatial points data frame) needed for analysis
 appreciation_for_kriging <- postGIStools::get_postgis_query(con_pg,
@@ -154,12 +158,10 @@ krige_infl.spatpixelsdf <- SpatialPixelsDataFrame(
 # which is where the data all come from. So we grab city boundaries which we'll use to clip the pixels/grid data
 # city boundaries from: https://gis-pdx.opendata.arcgis.com/datasets/city-boundaries?geometry=-123.637%2C45.386%2C-121.697%2C45.723
 
-setwd("~/Documents/R/CivicHousing/City_Boundaries/")
-portland_boundary <- rgdal::readOGR("City_Boundaries.shp") %>% 
+portland_boundary <- rgdal::readOGR("./City_Boundaries/City_Boundaries.shp") %>% 
   subset(CITYNAME == 'Portland') %>%
   spTransform(proj4string(appreciation_for_kriging))
 portland_boundary@data <- data.frame(CITYNAME = 'Portland') # mainly this gets rid of a bunch of factors variables with empty records from other cities that mess up the 'over' command below
-setwd("../")
 
 krige.spatpixelsdf.clipped <- krige.spatpixelsdf[which(!is.na(over(krige.spatpixelsdf,portland_boundary))),]
 krige_infl.spatpixelsdf.clipped <- krige_infl.spatpixelsdf[which(!is.na(over(krige_infl.spatpixelsdf,portland_boundary))),]
@@ -195,16 +197,17 @@ krige_infl.spolydf <- as(krige_infl.spatpixelsdf.clipped,'SpatialPolygons') %>%
 # this was a slight detour to geojson to create a gist file. The url from the raw gist file can 
 # be plugged into the storybook maps to make sure it loads quickly enough. 
 # oddly the default projection didn't render right, so spTansform to GCS was needed to get it to work. 
-krige_infl.geojson <- geojsonio::geojson_json(krige_infl.spolydf)
-krige_infl2.geojson <- geojsonio::geojson_json(spTransform(krige_infl.spolydf,CRS("+init=epsg:4326")))
+krige_infl1.geojson <- geojsonio::geojson_json(krige_infl.spolydf)
+krige_infl2.geojson <- geojsonio::geojson_json(spTransform(krige_infl.spolydf,CRS("+init=epsg:4326"))) ## TODO Confirm correct projection--> should it be 4269?
 
-geojsonio::geojson_write(krige_infl1.geojson, "~/Documents/R/CivicHousing/krig_infl1.geojson")
-geojsonio::geojson_write(krige_infl2.geojson, "~/Documents/R/CivicHousing/krig_infl2.geojson")
+## Hmm, isn't outputting this to the correct path.
+geojsonio::geojson_write(krige_infl1.geojson, "../data/processed/krig_infl1.geojson")
+geojsonio::geojson_write(krige_infl2.geojson, "../data/processed/krig_infl2.geojson")
 
 # final steps before loading to database are converting to sf and renaming to what we want the table name to be.
-krige_infl2.sf <- sf::st_as_sf(spTransform(krige_infl.spolydf,CRS("+init=epsg:4326")))
+krige_infl2.sf <- sf::st_as_sf(spTransform(krige_infl.spolydf, CRS("+init=epsg:4326")))
 
 home_inflation_kriging <- krige_infl2.sf
 
 # then write to db
-sf::st_write(obj = home_inflation_kriging, dsn = con_pg)  
+# sf::st_write(obj = home_inflation_kriging, dsn = con_pg)  
