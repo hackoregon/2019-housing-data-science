@@ -12,8 +12,16 @@ require(tidyverse)
 ### LOAD DATA ### 
 census_data <- read.csv("NCDB_Sample_Database_All_Tracts_12apr2019.csv")
 census_data_pop <- read.csv("NCDB_Sample_Population_10jun2019.csv")
+tract_gentrification <- read.csv("portland_gentrification_displacement_typology_by_tract_id.csv")
 census_data<- census_data %>% dplyr::left_join(census_data_pop)
 cz_tract_df <- read.csv("busstop_catchment_zones_tracts_overlap.csv")
+
+tract_gentrification <- tract_gentrification %>%
+  mutate(gentr_stage_group = dplyr::case_when(
+      as.character(human_name) %in% c('Susceptible', 'Early: Type 1','Early: Type 2') ~ 'Early',
+      as.character(human_name) %in% c('Dynamic') ~ 'Middle',
+      as.character(human_name) %in% c('Late: Type 1','Late: Type 2','Continued Loss') ~ 'Late'
+  ))
 
 ### DEFINE FIELDS TO APPEND ###
 # all 2017 fields that are tract level (not 'Met' fields which are Metro area versions, and not TotalPopulation)
@@ -62,6 +70,13 @@ for (ff in fields_to_append){
   cz_tract_df_appended <- left_join(cz_tract_df_appended, 
                                     calc_catchment_param_value(cz_tract_df, census_data, ff))
 }
+cz_tract_df_appended <- left_join(cz_tract_df_appended, 
+            calc_catchment_param_value(weighting_df = cz_tract_df, 
+                                       attribute_df = tract_gentrification, 
+                                       attribute_name ='gentr_stage_group',
+                                       attribute_geoid_fieldname = 'GEOID',
+                                       calc_method = 'value_of_largest_matching_tract'))
+
 write.csv(cz_tract_df_appended, 'busstop_catchment_zone_censusfield_appended.csv')
 
 
