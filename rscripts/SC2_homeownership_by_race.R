@@ -168,13 +168,30 @@ homeownership_by_race_2017_3 <- homeownership_by_race_2017_2 %>%
          lq_aian.brks = cut(lq_aian, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
          lq_api.brks = cut(lq_api, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
          lq_multi.brks = cut(lq_multi, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
-         lq_hisp.brks = cut(lq_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)"))) %>%
-  select(GEOID:share_total_own_hisp, loans_total:lq_hisp.brks, ALAND, AWATER, geometry) %>%
+         lq_hisp.brks = cut(lq_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         share_hh_white = total_hh_white / total_hh,
+         share_hh_black = total_hh_black / total_hh,
+         share_hh_aian = total_hh_aian / total_hh,
+         share_hh_api = total_hh_api / total_hh,
+         share_hh_multi = total_hh_multi / total_hh,
+         share_hh_hisp = total_hh_hisp / total_hh,
+         lq_hh_white = loans_share_white / share_hh_white,
+         lq_hh_black = loans_share_black / share_hh_black,
+         lq_hh_aian = loans_share_aian / share_hh_aian,
+         lq_hh_api = loans_share_api / share_hh_api,
+         lq_hh_multi = loans_share_multi / share_hh_multi,
+         lq_hh_hisp = loans_share_hisp / share_hh_hisp,
+         lq_hh_white.brks = cut(lq_hh_white, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_black.brks = cut(lq_hh_black, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_aian.brks = cut(lq_hh_aian, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_api.brks = cut(lq_hh_api, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_multi.brks = cut(lq_hh_multi, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_hisp.brks = cut(lq_hh_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)"))) %>%
+  select(GEOID:share_total_own_hisp, loans_total:lq_hh_hisp.brks, ALAND, AWATER, geometry) %>%
   mutate_each(funs(replace(., is.infinite(.), 0)), share_own:lq_hisp) %>%
   mutate_each(funs(replace(., is.na(.), 0)), share_own:lq_hisp)
 
 saveRDS(homeownership_by_race_2017_3, "../data/processed/homeownership_by_race_2017_HMDA_summary.RDS")
-
 
 #### 2007 - 2011 HMDA summary ####
 ## Subset of successful home purchase loans with complete racial demographic information
@@ -222,8 +239,26 @@ homeownership_by_race_2011_3 <- homeownership_by_race_2011_2 %>%
          lq_aian.brks = cut(lq_aian, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
          lq_api.brks = cut(lq_api, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
          lq_multi.brks = cut(lq_multi, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
-         lq_hisp.brks = cut(lq_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)"))) %>%
-  select(GEOID:share_total_own_hisp, loans_total:lq_hisp.brks, ALAND, AWATER, geometry) %>%
+         lq_hisp.brks = cut(lq_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         share_hh_white = total_hh_white / total_hh,
+         share_hh_black = total_hh_black / total_hh,
+         share_hh_aian = total_hh_aian / total_hh,
+         share_hh_api = total_hh_api / total_hh,
+         share_hh_multi = total_hh_multi / total_hh,
+         share_hh_hisp = total_hh_hisp / total_hh,
+         lq_hh_white = loans_share_white / share_hh_white,
+         lq_hh_black = loans_share_black / share_hh_black,
+         lq_hh_aian = loans_share_aian / share_hh_aian,
+         lq_hh_api = loans_share_api / share_hh_api,
+         lq_hh_multi = loans_share_multi / share_hh_multi,
+         lq_hh_hisp = loans_share_hisp / share_hh_hisp,
+         lq_hh_white.brks = cut(lq_hh_white, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_black.brks = cut(lq_hh_black, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_aian.brks = cut(lq_hh_aian, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_api.brks = cut(lq_hh_api, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_multi.brks = cut(lq_hh_multi, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
+         lq_hh_hisp.brks = cut(lq_hh_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)"))) %>%
+  select(GEOID:share_total_own_hisp, loans_total:lq_hh_hisp.brks, ALAND, AWATER, geometry) %>%
   mutate_each(funs(replace(., is.infinite(.), 0)), share_own:lq_hisp) %>%
   mutate_each(funs(replace(., is.na(.), 0)), share_own:lq_hisp)
 
