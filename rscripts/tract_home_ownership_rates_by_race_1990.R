@@ -132,3 +132,24 @@ pdx_ownership_by_race <- dbGetQuery(con_pg, paste0('
       WHERE "DATAYEAR"!=2011 
       AND tract_fips IN (',paste0("'",portland_tracts,"'", collapse = ','),')
       GROUP BY 1 ORDER BY 1;'))
+
+
+portland_home_ownership_by_race <- 
+  (pdx_ownership_by_race %>% 
+     dplyr::select(yr, ends_with('_rate')) %>% 
+     tidyr::gather(race, home_ownership_rate,-yr ) %>%
+     mutate(race = sub('_rate','',race)) 
+  ) %>% 
+  inner_join(pdx_ownership_by_race %>% 
+               dplyr::select(yr, ends_with('_count')) %>% 
+               tidyr::gather(race, home_ownership_count,-yr ) %>%
+               mutate(race = sub('_ownership_count','',race)) 
+  ) %>% 
+  inner_join(pdx_ownership_by_race %>% 
+               dplyr::select(yr, ends_with('_households')) %>%
+               tidyr::gather(race, household_count, -yr ) %>%
+               mutate(race = sub('_households','',race)) 
+  ) %>% 
+  cbind(geoname = 'Portland') %>% 
+  cbind(fips=NA)
+dbWriteTable(con_pg, 'portland_home_ownership_by_race',portland_home_ownership_by_race, row.names=FALSE)
