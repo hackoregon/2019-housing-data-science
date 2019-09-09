@@ -11,17 +11,18 @@ pdx_msa_definition <- c('41005', '41009', '41051', '41067', '41071', '53011', '5
 
 hmda_pdx_working_07t17 <- readRDS("../data/processed/hmda_pdx_working_2007t2017.RDS")
 homeownership_by_race_2017_3 <- readRDS("../data/processed/homeownership_by_race_2017_HMDA_summary.RDS")
-homeownership_by_race_2011_3 <- readRDS("../data/processed/homeownership_by_race_2011_HMDA_summary.RDS")
+# homeownership_by_race_2011_3 <- readRDS("../data/processed/homeownership_by_race_2011_HMDA_summary.RDS")
 
 ## TODO figure out how to make and map longitudinal dataset
 ## TODO reconcile tract boundary changes since 2007-2009 or 2011(?) HMDA uses older tract boundaries
 
 # mapview(homeownership_by_race_2017_3 %>% select(total_hh:lq_hisp.brks), burst = TRUE, hide = TRUE)
 
-pal <- colorRampPalette(brewer.pal(9, "RdYlBu"))
 
-mapview(homeownership_by_race_2017_3 %>% select(lq_white.brks:lq_hisp.brks), 
-        col.regions = pal(5), burst = TRUE, hide = TRUE)
+# https://github.com/r-spatial/mapview/issues/219
+pal <- colorRampPalette(brewer.pal(5, "RdYlBu"))
+
+mapview(homeownership_by_race_2017_3 %>% select(lq_white.brks:lq_hisp.brks),  burst = TRUE, hide = TRUE)
 # mapview(homeownership_by_race_2011_3 %>% select(lq_white.brks:lq_hisp.brks), col.regions = pal(5), burst = TRUE, hide = TRUE)
 
 
