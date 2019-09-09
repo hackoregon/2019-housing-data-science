@@ -188,8 +188,8 @@ homeownership_by_race_2017_3 <- homeownership_by_race_2017_2 %>%
          lq_hh_multi.brks = cut(lq_hh_multi, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
          lq_hh_hisp.brks = cut(lq_hh_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)"))) %>%
   select(GEOID:share_total_own_hisp, loans_total:lq_hh_hisp.brks, ALAND, AWATER, geometry) %>%
-  mutate_each(funs(replace(., is.infinite(.), 0)), share_own:lq_hisp) %>%
-  mutate_each(funs(replace(., is.na(.), 0)), share_own:lq_hisp)
+  mutate_each(funs(replace(., is.infinite(.), 0)), share_own:lq_hh_hisp.brks) %>%
+  mutate_each(funs(replace(., is.na(.), 0)), share_own:lq_hh_hisp.brks)
 
 saveRDS(homeownership_by_race_2017_3, "../data/processed/homeownership_by_race_2017_HMDA_summary.RDS")
 
@@ -259,7 +259,7 @@ homeownership_by_race_2011_3 <- homeownership_by_race_2011_2 %>%
          lq_hh_multi.brks = cut(lq_hh_multi, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)")),
          lq_hh_hisp.brks = cut(lq_hh_hisp, breaks = c(-1, 0.5, 0.85, 1.15, 1.5, 100), labels = c("Not represented (< 0.50)", "Under-represented (0.50 - 0.84)", "Acceptable range (0.85-1.14)", "Slightly over-represented (1.15-1.49)", "Over-represented (1.50-3.00)"))) %>%
   select(GEOID:share_total_own_hisp, loans_total:lq_hh_hisp.brks, ALAND, AWATER, geometry) %>%
-  mutate_each(funs(replace(., is.infinite(.), 0)), share_own:lq_hisp) %>%
-  mutate_each(funs(replace(., is.na(.), 0)), share_own:lq_hisp)
+  mutate_each(funs(replace(., is.infinite(.), 0)), share_own:lq_hh_hisp.brks) %>%
+  mutate_each(funs(replace(., is.na(.), 0)), share_own:lq_hh_hisp.brks)
 
 saveRDS(homeownership_by_race_2011_3, "../data/processed/homeownership_by_race_2011_HMDA_summary.RDS")
