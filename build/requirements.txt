@@ -17,7 +17,7 @@ Click==7.0
 commonmark==0.8.1
 conda==4.6.11
 cookiecutter==1.6.0
-cryptography==2.5
+cryptography==3.2
 cycler==0.10.0
 decorator==4.4.0
 defusedxml==0.5.0
